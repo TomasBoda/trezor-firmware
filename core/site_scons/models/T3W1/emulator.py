@@ -74,7 +74,12 @@ def configure(
         paths += ["embed/sec/tropic/inc"]
         defines += ["USE_TREZOR_CRYPTO"]
         features_available.append("tropic")
-        defines += ["USE_TROPIC=1"]
+
+        ########
+        # USE_TROPIC should eventually be enabled when building with the 'tropic' feature
+        # but for now we don't have the model running, which would crash the emulator on startup.
+        # defines += ["USE_TROPIC=1"]
+        ########
 
     if "input" in features_wanted:
         sources += ["embed/io/touch/unix/touch.c"]
