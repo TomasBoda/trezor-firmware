@@ -77,9 +77,10 @@ impl Shape<'_> for Bar {
 
         // TODO: fatal_error! in unsupported scenarious
 
-        let th = match self.fg_color {
-            Some(_) => self.thickness,
-            None => 0,
+        let th = if self.fg_color.is_some() && self.fg_color != self.bg_color {
+            self.thickness
+        } else {
+            0
         };
 
         if self.radius == 0 {
