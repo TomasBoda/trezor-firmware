@@ -112,16 +112,14 @@ class SessionV1(Session):
     def new(
         cls,
         client: TrezorClient,
-        passphrase: str | object = "",
+        passphrase: str | object | None = None,
         derive_cardano: bool = False,
         session_id: bytes | None = None,
     ) -> SessionV1:
         assert isinstance(client.protocol, ProtocolV1Channel)
         session = SessionV1(client, id=session_id or b"")
-
-        session.passphrase = passphrase
         session.derive_cardano = derive_cardano
-        session.init_session(session.derive_cardano)
+        session.init_session(session.derive_cardano, passphrase=passphrase)
         return session
 
     @classmethod
@@ -141,7 +139,9 @@ class SessionV1(Session):
             assert isinstance(self.client.protocol, ProtocolV1Channel)
         return self.client.protocol.read()
 
-    def init_session(self, derive_cardano: bool | None = None):
+    def init_session(
+        self, derive_cardano: bool | None = None, passphrase: str | object | None = None
+    ):
         if self.id == b"":
             session_id = None
         else:
@@ -152,6 +152,18 @@ class SessionV1(Session):
         assert isinstance(resp, messages.Features)
         if resp.session_id is not None:
             self.id = resp.session_id
+        if derive_cardano or passphrase is not None:
+            pass
+            # INIT SESSION HERE FOR REAL (eg. btc.getaddress)
+
+    def _get_callback_passphrase_v1(
+        self, passphrase: str = ""
+    ) -> t.Callable[[Session, t.Any], t.Any] | None:
+
+        def _callback_passphrase_v1(session: Session, msg: t.Any) -> t.Any:
+            return session.call(messages.PassphraseAck(passphrase=passphrase))
+
+        return _callback_passphrase_v1
 
 
 def default_button_callback(session: Session, msg: t.Any) -> t.Any:
