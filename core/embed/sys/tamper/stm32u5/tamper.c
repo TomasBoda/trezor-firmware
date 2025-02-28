@@ -39,10 +39,10 @@
  *
  * This is the configuration before the optimization:
  *  clk_init_def.PeriphClockSelection = RCC_PERIPHCLK_RTC;
- *  clk_init_def.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
- *  HAL_RCCEx_PeriphCLKConfig(&clk_init_def);
+ *  clk_init_def.RTCClockSelection = RCC_RTCCLKSOURCE_LSI (or
+ * RCC_RTCCLKSOURCE_LSE); HAL_RCCEx_PeriphCLKConfig(&clk_init_def);
  */
-HAL_StatusTypeDef clk_init(void) {
+HAL_StatusTypeDef clk_init(uint32_t source) {
   uint32_t tickstart = 0U;
 
   FlagStatus pwrclkchanged = RESET;
@@ -67,8 +67,7 @@ HAL_StatusTypeDef clk_init(void) {
    * from default */
   uint32_t bdcr_temp = READ_BIT(RCC->BDCR, RCC_BDCR_RTCSEL);
 
-  if ((bdcr_temp != RCC_RTCCLKSOURCE_NO_CLK) &&
-      (bdcr_temp != RCC_RTCCLKSOURCE_LSI)) {
+  if ((bdcr_temp != RCC_RTCCLKSOURCE_NO_CLK) && (bdcr_temp != source)) {
     /* Store the content of BDCR register before the reset of Backup Domain */
     bdcr_temp = READ_BIT(RCC->BDCR, ~(RCC_BDCR_RTCSEL));
     /* RTC Clock selection can be changed only if the Backup Domain is reset */
@@ -92,7 +91,7 @@ HAL_StatusTypeDef clk_init(void) {
   }
 
   /* Apply new RTC clock source selection */
-  __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI);
+  __HAL_RCC_RTC_CONFIG(source);
 
   /* Restore clock configuration if changed */
   if (pwrclkchanged == SET) {
@@ -102,8 +101,11 @@ HAL_StatusTypeDef clk_init(void) {
 }
 
 void tamper_init(void) {
-  // TODO LSE
-  clk_init();
+#ifdef USE_LSE
+  clk_init(RCC_RTCCLKSOURCE_LSE);
+#else
+  clk_init(RCC_RTCCLKSOURCE_LSI);
+#endif
 
   // Enable RTC peripheral (tampers are part of it)
   __HAL_RCC_RTC_ENABLE();
