@@ -5,6 +5,7 @@ if utils.USE_TROPIC:
     from trezor.crypto import tropic
 
 
+@unittest.skipUnless(utils.USE_TROPIC, "tropic")
 class TestCryptoTropic(unittest.TestCase):
     def test_ping(self):
         self.assertEqual(tropic.ping("HeLlO!"), "HeLlO!")
