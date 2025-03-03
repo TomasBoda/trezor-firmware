@@ -97,7 +97,7 @@ async def handle_single_message(ctx: Context, msg: Message) -> bool:
         # `req_type`. Raises if the message is malformed.
         req_msg = wrap_protobuf_load(msg.data, req_type)
 
-        if __debug__ and not utils.EMULATOR:
+        if __debug__ and utils.LOG_STACK_USAGE:
             utils.zero_unused_stack()
             unused_stack_before = utils.estimate_unused_stack()
 
@@ -113,7 +113,7 @@ async def handle_single_message(ctx: Context, msg: Message) -> bool:
         # workflows are shut down.
         res_msg = await workflow.spawn(with_context(ctx, task))
 
-        if __debug__ and not utils.EMULATOR:
+        if __debug__ and utils.LOG_STACK_USAGE:
             unused_stack_after = utils.estimate_unused_stack()
             log.debug(
                 __name__,

@@ -173,3 +173,5 @@ USE_THP: bool
 if __debug__:
     DISABLE_ANIMATION: bool
     """Whether the firmware should disable animations."""
+    LOG_STACK_USAGE: bool
+    """Whether the firmware should log estimated stack usage."""

@@ -243,7 +243,7 @@ STATIC mp_obj_t mod_trezorutils_sd_hotswap_enabled(void) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(mod_trezorutils_sd_hotswap_enabled_obj,
                                  mod_trezorutils_sd_hotswap_enabled);
 
-#if !PYOPT && !defined(TREZOR_EMULATOR)
+#if !PYOPT && LOG_STACK_USAGE
 /// def zero_unused_stack() -> None:
 ///     """
 ///     Zero unused stack memory.
@@ -478,7 +478,7 @@ STATIC const mp_rom_map_elem_t mp_module_trezorutils_globals_table[] = {
      MP_ROM_PTR(&mod_trezorutils_unit_packaging_obj)},
     {MP_ROM_QSTR(MP_QSTR_unit_btconly),
      MP_ROM_PTR(&mod_trezorutils_unit_btconly_obj)},
-#if !PYOPT && !defined(TREZOR_EMULATOR)
+#if !PYOPT && LOG_STACK_USAGE
     {MP_ROM_QSTR(MP_QSTR_zero_unused_stack),
      MP_ROM_PTR(&mod_trezorutils_zero_unused_stack_obj)},
     {MP_ROM_QSTR(MP_QSTR_estimate_unused_stack),
@@ -567,6 +567,11 @@ STATIC const mp_rom_map_elem_t mp_module_trezorutils_globals_table[] = {
 #else
     {MP_ROM_QSTR(MP_QSTR_DISABLE_ANIMATION), mp_const_false},
 #endif  // TREZOR_DISABLE_ANIMATION
+#if LOG_STACK_USAGE
+    {MP_ROM_QSTR(MP_QSTR_LOG_STACK_USAGE), mp_const_true},
+#else
+    {MP_ROM_QSTR(MP_QSTR_LOG_STACK_USAGE), mp_const_false},
+#endif  // LOG_STACK_USAGE
 #endif  // PYOPT
 };
 
