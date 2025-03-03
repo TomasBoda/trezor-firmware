@@ -31,7 +31,7 @@ typedef struct {
 
 static hw_revision_t g_hw_revision;
 
-uint8_t hw_revision_read(void) {
+static uint8_t hw_revision_read(void) {
   bool rev0 =
       GPIO_PIN_SET == HAL_GPIO_ReadPin(HW_REVISION_0_PORT, HW_REVISION_0_PIN);
   bool rev1 =

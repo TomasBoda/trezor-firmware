@@ -25,6 +25,11 @@
 static void prodtest_hw_revision(cli_t* cli) {
   uint8_t rev = hw_revision_get();
 
+  if (cli_arg_count(cli) > 0) {
+    cli_error_arg_count(cli);
+    return;
+  }
+
   cli_ok(cli, "%d", rev);
 }
 
